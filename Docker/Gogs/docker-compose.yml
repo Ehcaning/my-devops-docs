@@ -1,0 +1,42 @@
+version: '3.8'
+
+networks:
+  backend:
+    name: backend
+
+services:
+  gogs:
+    image: gogs/gogs:0.12.1
+    container_name: gogs
+    restart: always
+    ports:
+      - "10022:10022"
+      - "10080:3000"
+    volumes:
+      - ./data/gogs:/data
+    networks:
+      - backend
+
+  mysql:
+    image: mysql:8.0.21
+    container_name: mysql
+    volumes:
+      - ./data/mysql/db-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - backend
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ENTER_MYSQL_ROOT_PASSWORD
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8088:80"
+    networks:
+      - backend
+    external_links:
+      - mysql:db
+    restart: always
